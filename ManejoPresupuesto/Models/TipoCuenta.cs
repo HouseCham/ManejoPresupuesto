@@ -21,10 +21,13 @@ namespace ManejoPresupuesto.Models
         [Range(minimum:18, maximum:130, ErrorMessage = "Debes ser mayor de edad")]
         public int Edad { get; set; }
 
+        [Required(ErrorMessage = "El campo {0} es requerido")]
         [Url(ErrorMessage = "El campo debe ser una URL valida")]
         public string URL { get; set; }
 
+        [Required(ErrorMessage = "El campo {0} es requerido")]
         [CreditCard(ErrorMessage = "La tarjeta de credito no es valida")]
+        [Display(Name = "Tarjeta de credito")]
         public string TarjetaDeCredito { get; set; }
 
     }
