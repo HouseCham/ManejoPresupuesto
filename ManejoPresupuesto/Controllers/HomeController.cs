@@ -18,7 +18,7 @@ namespace ManejoPresupuesto.Controllers
             return View();
         }
 
-        public IActionResult Privacy()
+        public IActionResult NoEncontrado()
         {
             return View();
         }
