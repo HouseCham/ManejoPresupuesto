@@ -7,6 +7,7 @@ namespace ManejoPresupuesto.Servicios
     public interface IRepositorioTiposCuentas
     {
         Task Actualizar(TipoCuenta tipoCuenta);
+        Task Borrar(int id);
         Task Crear(TipoCuenta tipoCuenta);
         Task<bool> Existe(string nombre, int usuarioId);
         Task<IEnumerable<TipoCuenta>> Obtener(int usuarioId);
@@ -36,7 +37,7 @@ namespace ManejoPresupuesto.Servicios
             var existe = await connection.QueryFirstOrDefaultAsync<int>(
                     @"SELECT 1 
                     FROM TiposCuentas 
-                    WHERE Nombre = @Nombre AND UsuarioId = @UsuarioId;", new {nombre, usuarioId});
+                    WHERE Nombre = @Nombre AND UsuarioId = @UsuarioId;", new { nombre, usuarioId });
             return existe == 1;
         }
 
@@ -45,7 +46,7 @@ namespace ManejoPresupuesto.Servicios
             using var connection = new SqlConnection(connectionString);
             return await connection.QueryAsync<TipoCuenta>(@"SELECT Id, Nombre, Orden 
                                                             FROM TiposCuentas 
-                                                            WHERE UsuarioId = @UsuarioId;", new {usuarioId});
+                                                            WHERE UsuarioId = @UsuarioId;", new { usuarioId });
         }
 
         public async Task Actualizar(TipoCuenta tipoCuenta)
@@ -61,7 +62,13 @@ namespace ManejoPresupuesto.Servicios
             using var connection = new SqlConnection(connectionString);
             return await connection.QueryFirstOrDefaultAsync<TipoCuenta>(@"SELECT * 
                                                             FROM TiposCuentas 
-                                                            WHERE Id = @id AND UsuarioId = @usuarioId;", new {id, usuarioId});
+                                                            WHERE Id = @id AND UsuarioId = @usuarioId;", new { id, usuarioId });
+        }
+
+        public async Task Borrar(int id)
+        {
+            using var connection = new SqlConnection(connectionString);
+            await connection.ExecuteAsync("DELETE TiposCuentas WHERE Id = @id;", new {id});
         }
     }
 }
