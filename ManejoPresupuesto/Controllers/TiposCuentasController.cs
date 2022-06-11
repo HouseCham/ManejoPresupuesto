@@ -109,5 +109,25 @@ namespace ManejoPresupuesto.Controllers
             }
             return Json(true);
         }
+
+        [HttpPost]
+        public async Task<IActionResult> Ordenar([FromBody] int[] ids)
+        {
+            var userId = servicioUsuarios.ObtenerUsuarioId();
+            var tiposCuentas = await repositorioTiposCuentas.Obtener(userId);
+            var idsTiposCuentas = tiposCuentas.Select(x => x.Id);
+
+            /* ids = id Tipos cuenta proporcionados por el frontend, mientras que idsTiposCuenta se obtienen por back */
+            var idsTiposCuentasNoPertenecenAlUsuario = ids.Except(idsTiposCuentas).ToList();    // se comparan ambas listas de ids...
+                                                                                                // si idsTiposCuentasNoPertenecenAlUsuario esta vacio es que son iguales
+            if (idsTiposCuentasNoPertenecenAlUsuario.Count > 0)
+            {
+                return Forbid();
+            }
+            var tiposCuentasOrdenados = ids.Select((valor, indice) => new TipoCuenta() { Id = valor, Orden = indice + 1 }).AsEnumerable();
+            await repositorioTiposCuentas.Ordenar(tiposCuentasOrdenados);
+
+            return Ok();
+        }
     }
 }
