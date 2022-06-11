@@ -25,8 +25,12 @@
             <tr>
                 <td>
                     <input type="hidden" value="@tipoCuenta.Id" class="ids"/>
-                    <a class="btn btn-primary" asp-action="Editar" asp-route-id="@tipoCuenta.Id">Editar</a>
-                    <a class="btn btn-danger" asp-action="Borrar" asp-route-id="@tipoCuenta.Id">Borrar</a>
+                    <a class="btn btn-primary" asp-action="Editar" asp-route-id="@tipoCuenta.Id">
+                        <i class="bi bi-pencil-square"></i>
+                    </a>
+                    <a class="btn btn-danger" asp-action="Borrar" asp-route-id="@tipoCuenta.Id">
+                        <i class="bi bi-trash-fill"></i>
+                    </a>
                 </td>
                 <td>
                     @tipoCuenta.Nombre

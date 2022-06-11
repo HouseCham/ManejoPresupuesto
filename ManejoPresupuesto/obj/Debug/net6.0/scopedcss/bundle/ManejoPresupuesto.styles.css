@@ -18,6 +18,10 @@
 .acordeon-cuentas .acordeon-collapse[b-05jcn8n5mf] {
     font-size: 18px;
 }
+
+a[b-05jcn8n5mf]{
+    margin-left: 0.5rem;
+}
 /* _content/ManejoPresupuesto/Views/Shared/_Layout.cshtml.rz.scp.css */
 /* Please see documentation at https://docs.microsoft.com/aspnet/core/client-side/bundling-and-minification
 for details on configuring this project to bundle and minify static web assets. */
