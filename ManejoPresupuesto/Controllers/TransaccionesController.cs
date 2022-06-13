@@ -9,11 +9,21 @@ namespace ManejoPresupuesto.Controllers
     {
         private readonly IServicioUsuarios servicioUsuarios;
         private readonly IRepositorioCuentas repositorioCuentas;
+        private readonly IRepositorioCategorias repositorioCategorias;
+        private readonly IRepositorioTransacciones repositorioTransacciones;
 
-        public TransaccionesController(IServicioUsuarios servicioUsuarios, IRepositorioCuentas repositorioCuentas)
+        public TransaccionesController(IServicioUsuarios servicioUsuarios, IRepositorioCuentas repositorioCuentas, IRepositorioCategorias repositorioCategorias,
+            IRepositorioTransacciones repositorioTransacciones)
         {
             this.servicioUsuarios = servicioUsuarios;
             this.repositorioCuentas = repositorioCuentas;
+            this.repositorioCategorias = repositorioCategorias;
+            this.repositorioTransacciones = repositorioTransacciones;
+        }
+
+        public IActionResult Index()
+        {
+            return View();
         }
 
         [HttpGet]
@@ -22,8 +32,47 @@ namespace ManejoPresupuesto.Controllers
             var usuarioId = servicioUsuarios.ObtenerUsuarioId();
             var modelo = new TransaccionCreacionViewModel();
             modelo.Cuentas = await ObtenerCuentas(usuarioId);
+            modelo.Categorias = await ObtenerCategorias(usuarioId, modelo.TipoOperacionId);
             return View(modelo);
-        } 
+        }
+        
+        [HttpPost]
+        public async Task<IActionResult> Crear(TransaccionCreacionViewModel transaccion)
+        {
+            var usuarioId = servicioUsuarios.ObtenerUsuarioId();
+            if (!ModelState.IsValid)
+            {
+                transaccion.Cuentas = await ObtenerCuentas(usuarioId);
+                transaccion.Categorias = await ObtenerCategorias(usuarioId, transaccion.TipoOperacionId);
+                return View(transaccion);
+            }
+
+            var cuenta = await repositorioCuentas.ObtenerPorId(transaccion.CuentaId, usuarioId);
+            if (cuenta is null) return RedirectToAction("NoEncontrado", "Home");
+
+            var categoria = await repositorioCategorias.ObtenerPorId(transaccion.CategoriaId, usuarioId);
+            if (categoria is null) return RedirectToAction("NoEncontrado", "Home");
+
+            transaccion.UsuarioId = usuarioId;
+            if (transaccion.TipoOperacionId == TipoOperacion.Gasto) transaccion.Monto *= -1;
+            await repositorioTransacciones.Crear(transaccion);
+
+            return RedirectToAction("Index");
+        }
+        
+        private async Task<IEnumerable<SelectListItem>> ObtenerCategorias(int usuarioId, TipoOperacion tipoOperacion)
+        {
+            var categorias = await repositorioCategorias.Obtener(usuarioId, tipoOperacion);
+            return categorias.Select(x => new SelectListItem(x.Nombre, x.Id.ToString()));
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ObtenerCategorias([FromBody] TipoOperacion tipoOperacion)
+        {
+            var usuarioId = servicioUsuarios.ObtenerUsuarioId();
+            var categorias = await ObtenerCategorias(usuarioId, tipoOperacion);
+            return Ok(categorias);
+        }
 
         private async Task<IEnumerable<SelectListItem>> ObtenerCuentas(int usuarioId)
         {
