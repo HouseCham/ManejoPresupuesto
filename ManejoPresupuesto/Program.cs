@@ -8,6 +8,7 @@ builder.Services.AddTransient<IRepositorioTiposCuentas, RepositorioTiposCuentas>
 builder.Services.AddTransient<IServicioUsuarios, ServicioUsuarios>();
 builder.Services.AddTransient<IRepositorioCuentas, RepositorioCuentas>();
 builder.Services.AddTransient<IRepositorioCategorias, RepositorioCategorias>();
+builder.Services.AddTransient<IRepositorioTransacciones, RepositorioTransacciones>();
 
 // AutoMapper Configuracion
 builder.Services.AddAutoMapper(typeof(Program));
